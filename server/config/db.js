@@ -13,5 +13,5 @@ db.on("error", function (error) {
 });
 
 db.once("open", function () {
-  console.log("Connected to MongoDB");
+  console.log("Connected to MongoDB!");
 });

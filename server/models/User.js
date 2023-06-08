@@ -1,4 +1,5 @@
-const mongoose = require("mongoose")
+const mongoose = require("mongoose");
+const bcrypt = require("bcrypt");
 
 const userSchema = new mongoose.Schema({
   name: {
@@ -11,7 +12,7 @@ const userSchema = new mongoose.Schema({
     unique: true,
     validate: {
       validator: function (value) {
-        return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)
+        return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
       },
       message: (props) => `${props.value} is not a valid email address.`,
     },
@@ -22,7 +23,7 @@ const userSchema = new mongoose.Schema({
     minlength: 8,
     validate: {
       validator: function (value) {
-        return /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/.test(value)
+        return /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/.test(value);
       },
       message: (props) =>
         `Password must contain at least 8 characters, one uppercase letter, one lowercase letter, and one number.`,
@@ -30,14 +31,20 @@ const userSchema = new mongoose.Schema({
   },
   createdAt: {
     type: Date,
-    default: Date.now,
+    default: Date.now(),
   },
   updatedAt: {
     type: Date,
-    default: Date.now,
+    default: Date.now(),
   },
-})
+});
 
-const User = mongoose.model("User", userSchema)
+//save hashed password
+userSchema.pre("save", async function () {
+  this.password = await bcrypt.hash(this.password, 10);
+});
 
-module.exports = User
+
+const User = mongoose.model("User", userSchema);
+
+module.exports = User;
